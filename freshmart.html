@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FreshMart 🌿 - Grocery Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#2d6a4f;--green2:#52b788;--green3:#d8f3dc;--green4:#f0faf2;
+  --orange:#e76f51;--orange2:#fdf0eb;
+  --surface:#fff;--surface2:#f5f5f0;
+  --border:#e0e0d8;--text:#1a1a1a;--text2:#666;
+  --r:12px;--font:'Nunito',sans-serif;
+}
+body{font-family:var(--font);background:#f0f4f0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:20px;}
+#app{font-family:var(--font);min-height:700px;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:relative;width:100%;max-width:900px;}
+
+.topbar{background:var(--green);padding:12px 18px;display:flex;align-items:center;gap:12px;}
+.logo{font-family:'Playfair Display',serif;color:white;font-size:20px;margin-right:auto;}
+.logo span{color:#b7e4c7;}
+.top-search{flex:1;max-width:280px;position:relative;}
+.top-search input{width:100%;padding:8px 14px 8px 36px;border-radius:20px;border:none;background:rgba(255,255,255,0.15);color:white;font-size:13px;font-family:var(--font);}
+.top-search input::placeholder{color:rgba(255,255,255,0.6);}
+.top-search input:focus{outline:none;background:rgba(255,255,255,0.25);}
+.top-search .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:rgba(255,255,255,0.7);}
+.top-btns{display:flex;align-items:center;gap:8px;}
+.top-btn{background:rgba(255,255,255,0.15);color:white;border:none;border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.top-btn:hover{background:rgba(255,255,255,0.25);}
+.top-btn.cart-tb{background:var(--orange);color:white;}
+.top-btn.cart-tb:hover{background:#c95e3c;}
+.cbadge{background:white;color:var(--orange);border-radius:50%;width:17px;height:17px;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;}
+
+.nav{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 18px;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.ntab{padding:11px 16px;font-size:13px;color:var(--text2);border-bottom:2px solid transparent;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;font-family:var(--font);font-weight:600;}
+.ntab.active{color:var(--green);border-bottom:2px solid var(--green);}
+.ntab:hover:not(.active){color:var(--text);}
+
+.page{display:none;padding:16px 18px;animation:fadeIn 0.2s;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.hero{background:linear-gradient(135deg,var(--green) 0%,#1b4332 100%);border-radius:12px;padding:20px 24px;color:white;margin-bottom:16px;position:relative;overflow:hidden;}
+.hero::after{content:'🥦🥕🍅🫐🥑';position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:32px;letter-spacing:6px;opacity:0.3;filter:blur(1px);}
+.hero h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;}
+.hero p{font-size:13px;opacity:0.8;margin-bottom:14px;}
+.hero-btn{background:white;color:var(--green);border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.hero-btn:hover{background:#f0faf2;}
+.offer-strip{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
+.offer-strip::-webkit-scrollbar{display:none;}
+.offer-card{background:var(--orange2);border:1px solid #f4c5b2;border-radius:10px;padding:10px 14px;white-space:nowrap;min-width:160px;}
+.offer-card .ot{font-size:11px;color:var(--orange);font-weight:700;}
+.offer-card .od{font-size:12px;color:var(--text);margin-top:2px;}
+
+.cat-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.chip{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);font-family:var(--font);}
+.chip.active{background:var(--green);color:white;border-color:var(--green);}
+.chip:hover:not(.active){border-color:var(--green2);color:var(--green);}
+
+.sec{font-size:16px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-bottom:18px;}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color 0.15s,transform 0.15s;position:relative;}
+.pcard:hover{border-color:var(--green2);transform:translateY(-2px);}
+.pcard-img{height:90px;display:flex;align-items:center;justify-content:center;font-size:42px;background:var(--green4);position:relative;}
+.pcard-badge{position:absolute;top:6px;left:6px;background:var(--orange);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.pcard-fav{position:absolute;top:6px;right:6px;font-size:14px;cursor:pointer;opacity:0.5;transition:opacity 0.15s;}
+.pcard-fav.active,.pcard-fav:hover{opacity:1;}
+.pcard-body{padding:10px 10px 8px;}
+.pcard-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.pcard-unit{font-size:10px;color:var(--text2);margin-bottom:6px;}
+.pcard-row{display:flex;align-items:center;justify-content:space-between;}
+.pcard-price{font-size:14px;font-weight:800;color:var(--green);}
+.pcard-mrp{font-size:10px;color:var(--text2);text-decoration:line-through;margin-left:4px;}
+.add-c{background:var(--green);color:white;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.add-c:hover{background:#1b4332;}
+.qty-inline{display:flex;align-items:center;gap:4px;}
+.qb{width:22px;height:22px;border:1px solid var(--green);border-radius:5px;background:var(--surface);color:var(--green);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;}
+.qb:hover{background:var(--green);color:white;}
+.qn{font-size:12px;font-weight:700;min-width:16px;text-align:center;color:var(--text);}
+.stars{color:#f4a261;font-size:11px;}
+.rcount{font-size:10px;color:var(--text2);margin-left:3px;}
+
+.cart-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.ci-emoji{font-size:30px;width:44px;text-align:center;background:var(--green4);border-radius:8px;height:44px;display:flex;align-items:center;justify-content:center;}
+.ci-info{flex:1;}
+.ci-name{font-size:13px;font-weight:700;color:var(--text);}
+.ci-unit{font-size:11px;color:var(--text2);}
+.ci-price{font-size:13px;font-weight:700;color:var(--green);margin-top:2px;}
+.qty-ctl{display:flex;align-items:center;gap:6px;}
+.qbig{width:28px;height:28px;border:1px solid var(--green);border-radius:6px;background:var(--surface);color:var(--green);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;}
+.qbig:hover{background:var(--green);color:white;}
+.qbignum{font-size:14px;font-weight:700;min-width:20px;text-align:center;color:var(--text);}
+.rm-x{background:none;border:none;color:#e94560;cursor:pointer;font-size:16px;padding:4px;}
+.coupon-row{display:flex;gap:8px;margin-bottom:14px;}
+.coupon-inp{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:var(--surface);font-family:var(--font);}
+.coupon-inp:focus{outline:none;border-color:var(--green2);}
+.apply-btn{background:var(--green);color:white;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.apply-btn:hover{background:#1b4332;}
+.cart-summary{background:var(--green4);border:1px solid var(--green3);border-radius:12px;padding:14px 16px;margin-top:12px;}
+.srow{display:flex;justify-content:space-between;font-size:13px;margin-bottom:7px;color:var(--text2);}
+.srow.total{font-size:15px;font-weight:800;color:var(--text);border-top:1px solid var(--green3);padding-top:10px;margin-top:4px;}
+.chk-btn{width:100%;background:var(--green);color:white;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;margin-top:12px;font-family:var(--font);}
+.chk-btn:hover{background:#1b4332;}
+.coupon-ok{font-size:12px;color:var(--green);font-weight:700;margin-bottom:8px;}
+.coupon-err{font-size:12px;color:#e94560;margin-bottom:8px;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text2);font-size:14px;}
+
+.ocard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+.ohead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.oid{font-size:13px;font-weight:700;color:var(--text);}
+.ostatus{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700;}
+.s-d{background:#d8f3dc;color:#2d6a4f;}
+.s-s{background:#dbeafe;color:#1e40af;}
+.s-p{background:#fef3c7;color:#92400e;}
+.s-c{background:#fee2e2;color:#991b1b;}
+.oitems{font-size:12px;color:var(--text2);margin-bottom:6px;}
+.ofooter{display:flex;justify-content:space-between;font-size:12px;}
+.ototal{font-weight:700;color:var(--text);}
+.odate{color:var(--text2);}
+.otrack{display:flex;gap:0;margin-top:10px;}
+.ostep{flex:1;text-align:center;position:relative;}
+.ostep::before{content:'';position:absolute;top:8px;left:50%;right:-50%;height:2px;background:var(--border);}
+.ostep:last-child::before{display:none;}
+.ostep.done::before{background:var(--green2);}
+.ostep-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);background:var(--surface);margin:0 auto 4px;position:relative;z-index:1;}
+.ostep.done .ostep-dot{background:var(--green2);border-color:var(--green2);}
+.ostep-label{font-size:9px;color:var(--text2);}
+.ostep.done .ostep-label{color:var(--green);font-weight:700;}
+
+.rev-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;}
+.rev-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.rev-user{font-size:13px;font-weight:700;color:var(--text);}
+.rev-date{font-size:11px;color:var(--text2);}
+.rev-text{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5;}
+.rev-prod{font-size:11px;color:var(--green);font-weight:600;margin-top:4px;}
+
+.agrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+.astat{background:var(--surface2);border-radius:10px;padding:13px 14px;}
+.aslabel{font-size:11px;color:var(--text2);margin-bottom:3px;}
+.asval{font-size:22px;font-weight:800;color:var(--text);}
+.assub{font-size:11px;color:var(--green);margin-top:2px;font-weight:600;}
+.atable{width:100%;border-collapse:collapse;font-size:12px;}
+.atable th{text-align:left;color:var(--text2);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--border);}
+.atable td{padding:8px 10px;color:var(--text);border-bottom:1px solid var(--border);}
+.stock-lo{color:#e94560;font-weight:700;}
+.stock-ok{color:var(--green);font-weight:700;}
+
+.ai-panel{background:linear-gradient(135deg,#f0faf2,#e8f5e9);border:1px solid var(--green3);border-radius:12px;padding:16px;margin-bottom:16px;}
+.ai-title{font-size:13px;font-weight:800;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.ai-cards{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;}
+.ai-cards::-webkit-scrollbar{display:none;}
+.ai-card{background:white;border:1px solid var(--green3);border-radius:10px;padding:10px 12px;min-width:130px;cursor:pointer;transition:border-color 0.15s;}
+.ai-card:hover{border-color:var(--green2);}
+.ai-card-emoji{font-size:28px;margin-bottom:4px;}
+.ai-card-name{font-size:12px;font-weight:700;color:var(--text);}
+.ai-card-why{font-size:10px;color:var(--green);margin-top:2px;}
+.ai-card-price{font-size:13px;font-weight:800;color:var(--green);margin-top:4px;}
+.ai-add{background:var(--green);color:white;border:none;border-radius:5px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:var(--font);font-weight:700;margin-top:4px;}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;z-index:80;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--surface);border-radius:14px;padding:24px;width:310px;max-width:92%;}
+.modal h3{font-size:16px;font-weight:800;margin-bottom:16px;color:var(--text);}
+.frow{margin-bottom:11px;}
+.frow label{display:block;font-size:11px;color:var(--text2);margin-bottom:3px;font-weight:600;}
+.frow input,.frow select{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:13px;color:var(--text);font-family:var(--font);}
+.frow input:focus,.frow select:focus{outline:none;border-color:var(--green2);}
+.mbtns{display:flex;gap:8px;margin-top:14px;}
+.mbtn-p{flex:1;background:var(--green);color:white;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.mbtn-p:hover{background:#1b4332;}
+.mbtn-c{flex:1;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:13px;cursor:pointer;font-family:var(--font);text-align:center;}
+.auth-switch{font-size:12px;color:var(--text2);text-align:center;margin-top:10px;}
+.auth-switch span{color:var(--green);cursor:pointer;font-weight:700;}
+.tab-toggle{display:flex;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:14px;}
+.ttab{flex:1;padding:7px;text-align:center;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text2);font-weight:600;}
+.ttab.active{background:white;color:var(--green);font-weight:700;border:1px solid var(--border);}
+
+#toast{position:fixed;bottom:24px;right:24px;background:#1b4332;color:white;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:opacity 0.25s;pointer-events:none;z-index:200;font-weight:600;}
+#toast.show{opacity:1;}
+
+.stars-pick{display:flex;gap:4px;margin-bottom:2px;}
+.sstar{font-size:22px;cursor:pointer;opacity:0.4;transition:opacity 0.1s;}
+.sstar.active,.sstar:hover{opacity:1;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="logo">Fresh<span>Mart</span> 🌿</div>
+    <div class="top-search">
+      <span class="si">🔍</span>
+      <input type="text" placeholder="Search groceries..." id="gsearch" oninput="renderShop()">
+    </div>
+    <div class="top-btns">
+      <button class="top-btn" onclick="openAuth()" id="auth-btn">👤 Login</button>
+      <button class="top-btn cart-tb" onclick="switchTab('cart')">🛒 <span class="cbadge" id="cbadge">0</span></button>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="ntab active" onclick="switchTab('home')" id="tab-home">🏠 Home</button>
+    <button class="ntab" onclick="switchTab('shop')" id="tab-shop">🛍️ Shop</button>
+    <button class="ntab" onclick="switchTab('cart')" id="tab-cart">🛒 Cart</button>
+    <button class="ntab" onclick="switchTab('orders')" id="tab-orders">📦 Orders</button>
+    <button class="ntab" onclick="switchTab('reviews')" id="tab-reviews">⭐ Reviews</button>
+    <button class="ntab" onclick="switchTab('admin')" id="tab-admin">🔧 Admin</button>
+  </div>
+
+  <!-- HOME -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <h2>Fresh Groceries,<br>Delivered Fast 🚀</h2>
+      <p>Farm-fresh produce, daily staples & more. Free delivery on orders above ₹499!</p>
+      <button class="hero-btn" onclick="switchTab('shop')">Shop Now →</button>
+    </div>
+    <div class="offer-strip">
+      <div class="offer-card"><div class="ot">🔥 HOT DEAL</div><div class="od">Fruits up to 30% OFF</div></div>
+      <div class="offer-card"><div class="ot">🆕 NEW</div><div class="od">Organic range arrived</div></div>
+      <div class="offer-card"><div class="ot">⚡ FLASH</div><div class="od">Use code FRESH20</div></div>
+      <div class="offer-card"><div class="ot">🎁 BUNDLE</div><div class="od">Buy 3, get 1 free</div></div>
+    </div>
+    <div id="home-ai"></div>
+    <div class="sec">🔥 Trending Now</div>
+    <div class="pgrid" id="home-trending"></div>
+    <div class="sec">🥦 Fresh Vegetables</div>
+    <div class="pgrid" id="home-vegs"></div>
+  </div>
+
+  <!-- SHOP -->
+  <div class="page" id="page-shop">
+    <div class="cat-chips" id="shop-chips"></div>
+    <div class="pgrid" id="shop-grid"></div>
+  </div>
+
+  <!-- CART -->
+  <div class="page" id="page-cart">
+    <div id="cart-body"></div>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="page" id="page-orders">
+    <div id="orders-body"></div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div class="page" id="page-reviews">
+    <div style="margin-bottom:14px;">
+      <button class="apply-btn" onclick="openReviewModal()">+ Write a Review</button>
+    </div>
+    <div id="reviews-body"></div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="page" id="page-admin">
+    <div class="agrid" id="admin-stats"></div>
+    <div class="sec" style="margin-bottom:10px;">📦 Inventory</div>
+    <div style="overflow-x:auto"><table class="atable"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Sales</th></tr></thead><tbody id="admin-tbody"></tbody></table></div>
+    <button class="chk-btn" style="margin-top:14px;" onclick="openAddProd()">+ Add Product</button>
+  </div>
+
+  <!-- AUTH MODAL -->
+  <div class="modal-bg" id="auth-modal">
+    <div class="modal">
+      <div class="tab-toggle">
+        <div class="ttab active" onclick="authTab('login')" id="at-login">Login</div>
+        <div class="ttab" onclick="authTab('signup')" id="at-signup">Sign Up</div>
+      </div>
+      <div id="auth-form-wrap"></div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div class="modal-bg" id="chk-modal">
+    <div class="modal">
+      <h3>🛒 Checkout</h3>
+      <div class="frow"><label>Full Name</label><input id="c-name" placeholder="Rahul Sharma"></div>
+      <div class="frow"><label>Phone</label><input id="c-phone" placeholder="+91 98765 43210"></div>
+      <div class="frow"><label>Delivery Address</label><input id="c-addr" placeholder="Flat 4B, Green Park, New Delhi"></div>
+      <div class="frow"><label>Payment Method</label>
+        <select id="c-pay"><option>UPI (GPay/PhonePe)</option><option>Credit / Debit Card</option><option>Net Banking</option><option>Cash on Delivery</option><option>Wallet</option></select>
+      </div>
+      <div class="frow"><label>Delivery Slot</label>
+        <select id="c-slot"><option>Today 6–9 PM</option><option>Today 8–10 PM</option><option>Tomorrow 7–10 AM</option><option>Tomorrow 6–9 PM</option></select>
+      </div>
+      <div class="mbtns">
+        <div class="mbtn-c" onclick="closeModal('chk-modal')">Cancel</div>
+        <button class="mbtn-p" onclick="placeOrder()">Place Order ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW MODAL -->
+  <div class="modal-bg" id="rev-modal">
+    <div class="modal">
+      <h3>⭐ Write a Review</h3>
+      <div class="frow"><label>Product</label><select id="rev-prod"></select></div>
+      <div class="frow"><label>Rating</label>
+        <div class="stars-pick" id="stars-pick">
+          <span class="sstar" data-v="1" onclick="pickStar(1)">★</span>
+          <span class="sstar" data-v="2" onclick="pickStar(2)">★</span>
+          <span class="sstar" data-v="3" onclick="pickStar(3)">★</span>
+          <span class="sstar" data-v="4" onclick="pickStar(4)">★</span>
+          <span class="sstar" data-v="5" onclick="pickStar(5)">★</span>
+        </div>
+      </div>
+      <div class="frow"><label>Your Review</label><input id="rev-text" placeholder="Share your experience..."></div>
+      <div class="mbtns">
+        <div class="mbtn-c" onclick="closeModal('rev-modal')">Cancel</div>
+        <button class="mbtn-p" onclick="submitReview()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD PRODUCT MODAL -->
+  <div class="modal-bg" id="addprod-modal">
+    <div class="modal">
+      <h3>➕ Add Product</h3>
+      <div class="frow"><label>Name</label><input id="ap-name" placeholder="e.g. Organic Spinach"></div>
+      <div class="frow"><label>Category</label>
+        <select id="ap-cat"><option>Vegetables</option><option>Fruits</option><option>Dairy</option><option>Grains</option><option>Snacks</option><option>Beverages</option></select>
+      </div>
+      <div class="frow"><label>Emoji</label><input id="ap-emoji" placeholder="🥬" style="font-size:20px;"></div>
+      <div class="frow"><label>Price (₹)</label><input type="number" id="ap-price" placeholder="49"></div>
+      <div class="frow"><label>MRP (₹)</label><input type="number" id="ap-mrp" placeholder="65"></div>
+      <div class="frow"><label>Stock (units)</label><input type="number" id="ap-stock" placeholder="80"></div>
+      <div class="mbtns">
+        <div class="mbtn-c" onclick="closeModal('addprod-modal')">Cancel</div>
+        <button class="mbtn-p" onclick="addProduct()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const CATS=['All','Vegetables','Fruits','Dairy','Grains','Snacks','Beverages'];
+let activeCat='All', pickedStar=0, user=null, appliedCoupon=null;
+
+let products=[
+  {id:1,name:'Farm Tomatoes',cat:'Vegetables',emoji:'🍅',price:29,mrp:45,stock:80,sales:142,trending:true},
+  {id:2,name:'Fresh Spinach',cat:'Vegetables',emoji:'🥬',price:19,mrp:30,stock:60,sales:98,trending:false},
+  {id:3,name:'Broccoli',cat:'Vegetables',emoji:'🥦',price:49,mrp:70,stock:35,sales:76,trending:true},
+  {id:4,name:'Carrots (500g)',cat:'Vegetables',emoji:'🥕',price:25,mrp:35,stock:90,sales:120,trending:false},
+  {id:5,name:'Alphonso Mangoes',cat:'Fruits',emoji:'🥭',price:149,mrp:199,stock:25,sales:200,trending:true},
+  {id:6,name:'Strawberries',cat:'Fruits',emoji:'🍓',price:99,mrp:140,stock:18,sales:88,trending:true},
+  {id:7,name:'Bananas (6 pcs)',cat:'Fruits',emoji:'🍌',price:39,mrp:50,stock:100,sales:210,trending:false},
+  {id:8,name:'Blueberries',cat:'Fruits',emoji:'🫐',price:199,mrp:249,stock:12,sales:55,trending:false},
+  {id:9,name:'Full Cream Milk 1L',cat:'Dairy',emoji:'🥛',price:68,mrp:72,stock:150,sales:340,trending:false},
+  {id:10,name:'Amul Butter 100g',cat:'Dairy',emoji:'🧈',price:55,mrp:60,stock:75,sales:180,trending:false},
+  {id:11,name:'Greek Yogurt',cat:'Dairy',emoji:'🍶',price:89,mrp:110,stock:40,sales:70,trending:true},
+  {id:12,name:'Basmati Rice 1kg',cat:'Grains',emoji:'🍚',price:89,mrp:120,stock:60,sales:95,trending:false},
+  {id:13,name:'Multigrain Atta 2kg',cat:'Grains',emoji:'🌾',price:129,mrp:160,stock:45,sales:62,trending:false},
+  {id:14,name:'Masala Chips',cat:'Snacks',emoji:'🥔',price:30,mrp:40,stock:200,sales:310,trending:true},
+  {id:15,name:'Green Tea (25 bags)',cat:'Beverages',emoji:'🍵',price:120,mrp:150,stock:55,sales:88,trending:false},
+  {id:16,name:'Coconut Water 1L',cat:'Beverages',emoji:'🥥',price:65,mrp:80,stock:30,sales:72,trending:true},
+];
+
+let cart=[];
+let orders=[
+  {id:'#FM-1001',items:'Tomatoes, Milk, Bananas',total:136,status:'Delivered',date:'Mar 28, 2026',steps:4},
+  {id:'#FM-1002',items:'Mangoes, Strawberries',total:248,status:'Shipped',date:'Apr 5, 2026',steps:3},
+  {id:'#FM-1003',items:'Broccoli, Greek Yogurt, Tea',total:258,status:'Processing',date:'Apr 7, 2026',steps:2},
+];
+let reviews=[
+  {prod:'Farm Tomatoes',user:'Priya M.',rating:5,text:'Super fresh! Arrived in perfect condition. Will order again 🍅',date:'Apr 3, 2026'},
+  {prod:'Alphonso Mangoes',user:'Arjun K.',rating:5,text:'Best mangoes I\'ve had this season. Taste like they came straight from the farm.',date:'Apr 1, 2026'},
+  {prod:'Greek Yogurt',user:'Sneha R.',rating:4,text:'Creamy and delicious. Slightly expensive but worth it.',date:'Mar 29, 2026'},
+];
+const COUPONS={FRESH20:{pct:20,label:'20% OFF'},SAVE50:{flat:50,label:'₹50 OFF'},FM10:{pct:10,label:'10% OFF'}};
+const AI_REASONS={'Vegetables':'Based on your cart 🥗','Fruits':'Seasonal & fresh 🌟','Dairy':'Popular pick 🥛','Grains':'Daily essential 🌾','Snacks':'You might enjoy 😋','Beverages':'Pairs well 🍵'};
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+
+function switchTab(t){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+t).classList.add('active');
+  document.getElementById('tab-'+t).classList.add('active');
+  if(t==='home')renderHome();
+  if(t==='shop')renderShop();
+  if(t==='cart')renderCart();
+  if(t==='orders')renderOrders();
+  if(t==='reviews')renderReviews();
+  if(t==='admin')renderAdmin();
+}
+
+function cartCount(){return cart.reduce((s,i)=>s+i.qty,0);}
+function updateBadge(){document.getElementById('cbadge').textContent=cartCount();}
+function getCartQty(id){const c=cart.find(x=>x.id===id);return c?c.qty:0;}
+
+function addToCart(id){
+  const p=products.find(x=>x.id===id);
+  if(!p||p.stock<=0){toast('Out of stock!');return;}
+  const e=cart.find(x=>x.id===id);
+  if(e){e.qty++;}else{cart.push({...p,qty:1});}
+  p.stock--;
+  updateBadge();
+  toast(p.emoji+' '+p.name+' added!');
+  reRenderQty(id);
+}
+
+function changeQty(id,delta){
+  const e=cart.find(x=>x.id===id);
+  const p=products.find(x=>x.id===id);
+  if(!e)return;
+  e.qty+=delta;
+  if(p)p.stock-=delta;
+  if(e.qty<=0){if(p)p.stock+=delta;cart=cart.filter(x=>x.id!==id);}
+  updateBadge();
+  reRenderQty(id);
+}
+
+function reRenderQty(id){
+  const q=getCartQty(id);
+  document.querySelectorAll('[data-qid="'+id+'"]').forEach(el=>{
+    if(q>0){
+      el.innerHTML=`<button class="qb" onclick="changeQty(${id},-1)">−</button><span class="qn">${q}</span><button class="qb" onclick="changeQty(${id},+1)">+</button>`;
+    } else {
+      el.innerHTML=`<button class="add-c" onclick="addToCart(${id})">Add</button>`;
+    }
+  });
+  if(document.getElementById('page-cart').classList.contains('active'))renderCart();
+}
+
+function pcardHTML(p){
+  const q=getCartQty(p.id);
+  const disc=p.mrp>p.price?Math.round((p.mrp-p.price)/p.mrp*100):0;
+  const avgR=(3.5+Math.random()*1.5).toFixed(1);
+  return `<div class="pcard">
+    <div class="pcard-img">
+      ${disc?`<div class="pcard-badge">${disc}% OFF</div>`:''}
+      <span class="pcard-fav ${Math.random()>0.7?'active':''}" onclick="this.classList.toggle('active')">❤</span>
+      ${p.emoji}
+    </div>
+    <div class="pcard-body">
+      <div class="pcard-name">${p.name}</div>
+      <div class="pcard-unit">${p.cat} • ${p.stock>0?p.stock+' left':'Out of stock'}</div>
+      <div style="margin-bottom:5px;"><span class="stars">${'★'.repeat(Math.round(parseFloat(avgR)))}${'☆'.repeat(5-Math.round(parseFloat(avgR)))}</span><span class="rcount">(${Math.floor(20+Math.random()*80)})</span></div>
+      <div class="pcard-row">
+        <div><span class="pcard-price">₹${p.price}</span>${p.mrp>p.price?`<span class="pcard-mrp">₹${p.mrp}</span>`:''}</div>
+        <div class="qty-inline" data-qid="${p.id}">
+          ${q>0?`<button class="qb" onclick="changeQty(${p.id},-1)">−</button><span class="qn">${q}</span><button class="qb" onclick="changeQty(${p.id},+1)">+</button>`:`<button class="add-c" onclick="addToCart(${p.id})">${p.stock>0?'Add':'Out'}</button>`}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHome(){
+  const cartCats=cart.length?[...new Set(cart.map(i=>i.cat))]:['Vegetables','Fruits'];
+  const recs=products.filter(p=>cartCats.includes(p.cat)&&!cart.find(c=>c.id===p.id)).slice(0,5);
+  const finalRecs=recs.length?recs:products.slice(0,5);
+  document.getElementById('home-ai').innerHTML=`<div class="ai-panel">
+    <div class="ai-title">🤖 AI Picks For You <span style="font-size:11px;color:var(--text2);font-weight:400;">${cart.length?'based on your cart':'trending today'}</span></div>
+    <div class="ai-cards">${finalRecs.map(p=>`<div class="ai-card">
+      <div class="ai-card-emoji">${p.emoji}</div>
+      <div class="ai-card-name">${p.name}</div>
+      <div class="ai-card-why">${AI_REASONS[p.cat]||'You may like this'}</div>
+      <div class="ai-card-price">₹${p.price}</div>
+      <button class="ai-add" onclick="addToCart(${p.id});renderHome()">+ Add</button>
+    </div>`).join('')}</div>
+  </div>`;
+  document.getElementById('home-trending').innerHTML=products.filter(p=>p.trending).slice(0,4).map(pcardHTML).join('');
+  document.getElementById('home-vegs').innerHTML=products.filter(p=>p.cat==='Vegetables').slice(0,4).map(pcardHTML).join('');
+}
+
+function renderShop(){
+  const q=document.getElementById('gsearch').value.toLowerCase();
+  document.getElementById('shop-chips').innerHTML=CATS.map(c=>`<button class="chip ${activeCat===c?'active':''}" onclick="activeCat='${c}';renderShop()">${c}</button>`).join('');
+  const filtered=products.filter(p=>(activeCat==='All'||p.cat===activeCat)&&(!q||p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q)));
+  document.getElementById('shop-grid').innerHTML=filtered.length?filtered.map(pcardHTML).join(''):'<div class="empty-state">No products found 🔍</div>';
+}
+
+function renderCart(){
+  const el=document.getElementById('cart-body');
+  if(!cart.length){
+    el.innerHTML='<div class="empty-state">🛒<br><br>Your cart is empty<br><span style="font-size:12px">Add some fresh groceries!</span><br><br><button class="apply-btn" onclick="switchTab(\'shop\')">Browse Shop →</button></div>';
+    return;
+  }
+  const subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  let discount=0;
+  if(appliedCoupon){const c=COUPONS[appliedCoupon];discount=c.pct?Math.round(subtotal*c.pct/100):c.flat||0;discount=Math.min(discount,subtotal);}
+  const shipping=subtotal>=499?0:40;
+  const total=subtotal-discount+shipping;
+  el.innerHTML=`
+    ${cart.map(item=>`<div class="cart-item">
+      <div class="ci-emoji">${item.emoji}</div>
+      <div class="ci-info">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-unit">${item.cat}</div>
+        <div class="ci-price">₹${item.price} × ${item.qty} = ₹${item.price*item.qty}</div>
+      </div>
+      <div class="qty-ctl">
+        <button class="qbig" onclick="changeQty(${item.id},-1)">−</button>
+        <span class="qbignum">${item.qty}</span>
+        <button class="qbig" onclick="changeQty(${item.id},+1)">+</button>
+      </div>
+      <button class="rm-x" onclick="removeItem(${item.id})">✕</button>
+    </div>`).join('')}
+    <div style="margin-top:14px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px;">APPLY COUPON</div>
+      <div class="coupon-row">
+        <input class="coupon-inp" id="coup-inp" placeholder="Try FRESH20, SAVE50, FM10">
+        <button class="apply-btn" onclick="applyCoupon()">Apply</button>
+      </div>
+      <div id="coup-msg"></div>
+    </div>
+    <div class="cart-summary">
+      <div class="srow"><span>Subtotal (${cartCount()} items)</span><span>₹${subtotal}</span></div>
+      ${discount?`<div class="srow"><span>Coupon (${appliedCoupon})</span><span style="color:var(--green)">−₹${discount}</span></div>`:''}
+      <div class="srow"><span>Delivery</span><span>${shipping===0?'<span style="color:var(--green);font-weight:700">FREE ✓</span>':'₹'+shipping}</span></div>
+      ${shipping>0?`<div style="font-size:11px;color:var(--text2);margin-bottom:6px;">Add ₹${499-subtotal} more for free delivery</div>`:''}
+      <div class="srow total"><span>Total</span><span>₹${total}</span></div>
+    </div>
+    <button class="chk-btn" onclick="openModal('chk-modal')">Proceed to Checkout →</button>
+  `;
+}
+
+function removeItem(id){
+  const item=cart.find(x=>x.id===id);
+  const prod=products.find(x=>x.id===id);
+  if(item&&prod)prod.stock+=item.qty;
+  cart=cart.filter(x=>x.id!==id);
+  updateBadge();
+  renderCart();
+}
+
+function applyCoupon(){
+  const code=document.getElementById('coup-inp').value.trim().toUpperCase();
+  const msg=document.getElementById('coup-msg');
+  if(COUPONS[code]){
+    appliedCoupon=code;
+    msg.innerHTML=`<div class="coupon-ok">✓ ${COUPONS[code].label} applied!</div>`;
+    renderCart();
+  } else {
+    msg.innerHTML=`<div class="coupon-err">✗ Invalid coupon code</div>`;
+  }
+}
+
+function placeOrder(){
+  const name=document.getElementById('c-name').value.trim();
+  if(!name){toast('Please enter your name');return;}
+  const subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  let discount=0;
+  if(appliedCoupon){const c=COUPONS[appliedCoupon];discount=c.pct?Math.round(subtotal*c.pct/100):c.flat||0;}
+  const shipping=subtotal>=499?0:40;
+  const total=subtotal-discount+shipping;
+  const items=cart.map(i=>i.name).join(', ');
+  const id='#FM-'+(1000+orders.length+1);
+  orders.unshift({id,items,total,status:'Processing',date:'Apr 8, 2026',steps:2});
+  cart=[];
+  appliedCoupon=null;
+  updateBadge();
+  closeModal('chk-modal');
+  toast('🎉 Order placed! Delivering today.');
+  switchTab('orders');
+}
+
+function renderOrders(){
+  const smap={'Delivered':{cls:'s-d',steps:4},'Shipped':{cls:'s-s',steps:3},'Processing':{cls:'s-p',steps:2},'Cancelled':{cls:'s-c',steps:1}};
+  const slabels=['Confirmed','Packed','Shipped','Delivered'];
+  document.getElementById('orders-body').innerHTML=orders.length?
+    orders.map(o=>{const s=smap[o.status]||{cls:'s-p',steps:2};return `<div class="ocard">
+      <div class="ohead"><span class="oid">${o.id}</span><span class="ostatus ${s.cls}">${o.status}</span></div>
+      <div class="oitems">${o.items}</div>
+      <div class="otrack">${slabels.map((l,i)=>`<div class="ostep ${i<s.steps?'done':''}"><div class="ostep-dot"></div><div class="ostep-label">${l}</div></div>`).join('')}</div>
+      <div class="ofooter" style="margin-top:8px;"><span class="ototal">₹${o.total}</span><span class="odate">${o.date}</span></div>
+    </div>`;}).join('')
+    :'<div class="empty-state">📦<br><br>No orders yet</div>';
+}
+
+function renderReviews(){
+  const sel=document.getElementById('rev-prod');
+  if(sel)sel.innerHTML=products.map(p=>`<option>${p.name}</option>`).join('');
+  document.getElementById('reviews-body').innerHTML=reviews.map(r=>`<div class="rev-card">
+    <div class="rev-head"><span class="rev-user">👤 ${r.user}</span><span class="rev-date">${r.date}</span></div>
+    <div><span class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+    <div class="rev-text">${r.text}</div>
+    <div class="rev-prod">${r.prod}</div>
+  </div>`).join('');
+}
+
+function renderAdmin(){
+  const totalRev=orders.reduce((s,o)=>s+o.total,0);
+  const lowStock=products.filter(p=>p.stock<15).length;
+  document.getElementById('admin-stats').innerHTML=`
+    <div class="astat"><div class="aslabel">Total Revenue</div><div class="asval">₹${totalRev.toLocaleString()}</div><div class="assub">↑ 18% this month</div></div>
+    <div class="astat"><div class="aslabel">Orders</div><div class="asval">${orders.length}</div><div class="assub">↑ 2 today</div></div>
+    <div class="astat"><div class="aslabel">Products</div><div class="asval">${products.length}</div><div class="assub">${lowStock} low stock</div></div>
+    <div class="astat"><div class="aslabel">Reviews</div><div class="asval">${reviews.length}</div><div class="assub">Avg ★4.3</div></div>
+  `;
+  document.getElementById('admin-tbody').innerHTML=products.map(p=>`<tr>
+    <td>${p.emoji} ${p.name}</td><td>${p.cat}</td><td>₹${p.price}</td>
+    <td class="${p.stock<15?'stock-lo':'stock-ok'}">${p.stock}${p.stock<15?' ⚠':' ✓'}</td><td>${p.sales}</td>
+  </tr>`).join('');
+}
+
+function openAuth(){openModal('auth-modal');authTab('login');}
+function authTab(t){
+  document.getElementById('at-login').classList.toggle('active',t==='login');
+  document.getElementById('at-signup').classList.toggle('active',t==='signup');
+  const w=document.getElementById('auth-form-wrap');
+  if(t==='login'){
+    w.innerHTML=`<div class="frow"><label>Email</label><input id="l-email" placeholder="you@email.com"></div>
+    <div class="frow"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"></div>
+    <div class="mbtns"><div class="mbtn-c" onclick="closeModal('auth-modal')">Cancel</div><button class="mbtn-p" onclick="doLogin()">Login</button></div>
+    <div class="auth-switch">New here? <span onclick="authTab('signup')">Create account</span></div>`;
+  } else {
+    w.innerHTML=`<div class="frow"><label>Name</label><input id="s-name" placeholder="Rahul Sharma"></div>
+    <div class="frow"><label>Email</label><input id="s-email" placeholder="you@email.com"></div>
+    <div class="frow"><label>Password</label><input type="password" id="s-pass" placeholder="Min 6 chars"></div>
+    <div class="mbtns"><div class="mbtn-c" onclick="closeModal('auth-modal')">Cancel</div><button class="mbtn-p" onclick="doSignup()">Create Account</button></div>
+    <div class="auth-switch">Already a member? <span onclick="authTab('login')">Login</span></div>`;
+  }
+}
+function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  if(!email){toast('Enter your email');return;}
+  user={name:email.split('@')[0],email};
+  document.getElementById('auth-btn').textContent='👤 '+user.name.charAt(0).toUpperCase()+user.name.slice(1);
+  closeModal('auth-modal');toast('Welcome back, '+user.name+'! 👋');
+}
+function doSignup(){
+  const name=document.getElementById('s-name').value.trim();
+  if(!name){toast('Enter your name');return;}
+  user={name,email:document.getElementById('s-email').value};
+  document.getElementById('auth-btn').textContent='👤 '+name;
+  closeModal('auth-modal');toast('Account created! Welcome, '+name+' 🎉');
+}
+
+function openReviewModal(){
+  const sel=document.getElementById('rev-prod');
+  if(sel)sel.innerHTML=products.map(p=>`<option>${p.name}</option>`).join('');
+  pickedStar=0;
+  document.querySelectorAll('.sstar').forEach(s=>s.classList.remove('active'));
+  openModal('rev-modal');
+}
+function pickStar(n){
+  pickedStar=n;
+  document.querySelectorAll('.sstar').forEach(s=>s.classList.toggle('active',parseInt(s.dataset.v)<=n));
+}
+function submitReview(){
+  if(!pickedStar){toast('Pick a star rating');return;}
+  const prod=document.getElementById('rev-prod').value;
+  const text=document.getElementById('rev-text').value.trim();
+  if(!text){toast('Write something!');return;}
+  reviews.unshift({prod,user:user?user.name:'Anonymous',rating:pickedStar,text,date:'Apr 8, 2026'});
+  closeModal('rev-modal');toast('Review submitted! ⭐');renderReviews();
+}
+
+function openAddProd(){openModal('addprod-modal');}
+function addProduct(){
+  const name=document.getElementById('ap-name').value.trim();
+  const price=parseInt(document.getElementById('ap-price').value)||0;
+  if(!name||!price){toast('Fill name and price');return;}
+  products.push({id:Date.now(),name,cat:document.getElementById('ap-cat').value,emoji:document.getElementById('ap-emoji').value||'🥗',price,mrp:parseInt(document.getElementById('ap-mrp').value)||price,stock:parseInt(document.getElementById('ap-stock').value)||50,sales:0,trending:false});
+  closeModal('addprod-modal');toast('Product added! 🎉');renderAdmin();
+}
+
+renderHome();
+</script>
+</body>
+</html>
